@@ -1,0 +1,101 @@
+#tableContainer {
+    padding-bottom: 24px;
+}
+#title {
+    font-size: 16px;
+    padding-bottom: 12px;
+}
+#isPlayerDrop {
+    font-size: 20px;
+    padding-bottom: 12px;
+    color: darkred;
+}
+#roster {
+    white-space: pre-wrap;
+}
+#rulesButton {
+    margin-top: 16px;
+    background: rgb(46, 46, 49);
+    color: white;
+    border-width: 0px;
+    border-radius: 4px;
+    padding: 16px 12px;
+    font-size: 16px;
+    font-family: 'Minion Pro Bold';
+}
+#row {
+    display: flex;
+    padding: 16px 0px;
+}
+#сolumn {
+    display: flex;
+    flex: 1;
+    align-items: center;
+}
+#smallColumn {
+    display: flex;
+    min-width: 15%;
+    justify-content: center;
+    align-items: center;
+}
+#extraSmallColumn {
+    display: flex;
+    min-width: 8%;
+    justify-content: center;
+    align-items: center;
+}
+#playContainer {
+    width: 100%;
+    padding: 0;
+    border: none;
+    font: inherit;
+    background: inherit;
+}
+#checkboxContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    padding: 0px 12px;
+    margin-bottom: 12px;
+}
+  
+#checkboxText {
+    font-family: 'Minion Pro Bold';
+    padding: 16px 0px;
+}
+
+#modal {
+    display: flex;
+    gap: 16px;
+    padding-top: 12px;
+}
+
+#modalButton {
+    width: 100%;
+    background: rgb(46, 46, 49);
+    color: white;
+    border-width: 0px;
+    border-radius: 4px;
+    padding: 12px;
+    font-size: 16px;
+    font-family: 'Minion Pro Bold';
+}
+
+#sendMessageContainer {
+    padding-top: 16px;
+    display: flex;
+}
+
+#sendMessageButton {
+    height: 48px;
+    background: rgb(46, 46, 49);
+    color: white;
+    border-width: 0px;
+    border-radius: 4px;
+    padding: 12px;
+    font-size: 16px;
+    font-family: 'Minion Pro Bold';
+    margin-left: 16px;
+}

@@ -1,0 +1,74 @@
+#container {
+    padding: 0px 16px;
+}
+#title {
+    text-align: center;
+    padding: 0 16px;
+}
+#buttonContainer {
+    display: flex;
+}
+#regButton {
+    background: rgb(46, 46, 49);
+    color: white;
+    border-width: 0px;
+    border-radius: 4px;
+    margin: 0px 16px;
+    margin-bottom: 12px;
+    text-align: start;
+    padding: 16px 12px;
+    font-size: 16px;
+    font-family: 'Minion Pro Bold';
+    width: 100%;
+    text-align: center;
+}
+#disableRegButton {
+    background: rgb(201, 200, 199);
+    color: white;
+    border-width: 0px;
+    border-radius: 4px;
+    margin: 0px 16px;
+    margin-bottom: 12px;
+    text-align: start;
+    padding: 16px 12px;
+    font-size: 16px;
+    font-family: 'Minion Pro Bold';
+    width: 100%;
+    text-align: center;
+}
+#button {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(236, 236, 236);
+    color: black;
+    padding: 8px;
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-family: 'Minion Pro Bold';
+    text-align: start;
+    cursor: pointer;
+    align-items: center;
+    border-radius: 8px;
+    width: 100%;
+    border: 1px solid rgb(211, 211, 211);
+}
+#loaderContainer {
+    display: flex;
+    justify-content: center;
+    padding-top: 100px;
+}
+#modal {
+    display: flex;
+    gap: 16px;
+    padding-top: 12px;
+}
+#modalButton {
+    width: 100%;
+    background: rgb(46, 46, 49);
+    color: white;
+    border-width: 0px;
+    border-radius: 4px;
+    padding: 12px;
+    font-size: 16px;
+    font-family: 'Minion Pro Bold';
+}

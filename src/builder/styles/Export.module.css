@@ -1,0 +1,120 @@
+#container {
+  padding: 8px 8px;
+  margin-top: 8px;
+}
+
+#buttonContainer {
+  display: flex;
+  justify-content: center;
+}
+
+#button {
+  background: rgb(245, 201, 80);
+  color: black;
+  border-radius: 4px;
+  border-width: 0px;
+  padding: 12px;
+  font-size: 16px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+#disableButton {
+  background: rgb(201, 200, 199);
+  color: white;
+  border-radius: 4px;
+  border-width: 0px;
+  padding: 12px;
+  font-size: 16px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+#disabledButton {
+  background: rgb(201, 200, 199);
+  color: white; 
+  border-radius: 4px;
+  border-width: 0px;
+  padding: 12px;
+  font-size: 16px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+#note {
+  margin: 0px;
+}
+
+#errorsContainer {
+  background-color: darkred;
+  margin-bottom: 16px;
+  margin-top: 16px;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+#warningsContainer {
+  background-color: rgb(245, 201, 80);
+  margin-bottom: 16px;
+  margin-top: 16px;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+#error {
+  margin: 0px;
+  color: white;
+}
+
+#warning {
+  margin: 0px;
+}
+
+#publicCheckboxContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#publicNote {
+  font-size: 12px;
+  color: lightgray;
+  margin-top: -12px;
+}
+
+#listDeletedContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#listDeletedTitle {
+  font-size: 14px;
+  line-height: 18px;
+}
+
+#listDeletedSubtitle {
+  font-size: 12px;
+  line-height: 16px;
+  color: lightgray;
+}
+
+#modalTitle {
+  font-size: 20px;
+  line-height: 24px;
+  text-align: center;
+}
+
+#modalText {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+#regiment {
+  padding-bottom: 12px;
+}
+
+#errorText {
+  color: red;
+}
