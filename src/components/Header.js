@@ -34,7 +34,7 @@ const Header = () => {
         } else if (pathname === '/rosters') {
             search.rostersValue = ''
             search.rosters = []
-        } else if (pathname === '/players' || pathname === '/icePlayers' || pathname === '/challenges') {
+        } else if (pathname === '/players' || pathname === '/teams') {
             search.playersValue = ''
             search.players = []
         } else if (pathname === '/units') {
@@ -96,7 +96,7 @@ const Header = () => {
             ? null
             : <button id={Styles.leftButton} onClick={handleGoBack}><img src={ArrowBack} alt='' /></button>
         }
-        <p id={Styles.title}>{state?.title || 'Ural GT 2026'}</p>
+        <p id={Styles.title}>{state?.title || 'DicePod Team Tournament 2026'}</p>
         {renderRightButton()}
     </div>
 }

@@ -9,7 +9,8 @@ import FloatingLabelInput from '../components/FloatingLabelInput'
 import Row from '../components/Row'
 import HeaderImage from '../components/HeaderImage'
 import Modal from '../components/Modal'
-import Image from '../images/UGT.png'
+import Checkbox from '../components/Checkbox'
+import Image from '../images/DicePod.jpg'
 
 import size from 'lodash/size'
 import includes from 'lodash/includes'
@@ -54,7 +55,7 @@ const cities = [
     'Самара'
 ]
 
-const PLAYERS_LIMIT = 64
+const PLAYERS_LIMIT = 100
 
 const Registration = () => {
     // eslint-disable-next-line
@@ -63,9 +64,11 @@ const Registration = () => {
     const [name, setName] = useState(user?.first_name || '')
     const [surname, setSurname] = useState(user?.last_name || '')
     const [city, setCity] = useState('')
+    const [teamName, setTeamName] = useState('')
+    const [isCapitan, setIsCapitan] = useState(false)
     const [modalData, setModalData] = useState({visible: false, title: ''})
 
-    const isDisableButton = !name || !surname || !city
+    const isDisableButton = !name || !surname || !city || (isCapitan ? !teamName : false)
     if (includes(Constants.judgesIds, user?.id)) {
         player.isJudge = true
     }
@@ -81,7 +84,19 @@ const Registration = () => {
         })
             .then(response => response.json())
             .catch(error => console.error(error))
-      }, [name, surname, city, user?.id])
+        if (isCapitan && teamName) {
+            await fetch('https://aoscom.online/team/reg', {
+                method: 'POST',
+                body: JSON.stringify({tgId: user?.id, teamName}),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': "application/json, text/javascript, /; q=0.01"
+                }
+            })
+                .then(response => response.json())
+                .catch(error => console.error(error))
+        }
+      }, [name, surname, city, user?.id, teamName, isCapitan])
 
     const handleGetPlayers = useCallback(async (withReg) => {
         await fetch('https://aoscom.online/players/')
@@ -171,7 +186,6 @@ const Registration = () => {
                 meta.isRostersShow = data.isRostersShow
                 meta.isTournamentRulesShow = data.isTournamentRulesShow
                 meta.isPlayersListShow = data.isPlayersListShow
-                meta.isChallengesOpen = data.isChallengesOpen
                 meta.isRegOpen = data.isRegOpen
                 meta.battleplan = data.battleplan
                 forceUpdate()
@@ -197,6 +211,14 @@ const Registration = () => {
 
     const handleChangeCity = (e, value) => {
         setCity(value || e.target.value)
+    }
+
+    const handleChangeTeamName = (e, value) => {
+        setTeamName(value || e.target.value)
+    }
+
+    const handleChangeIsCapitan = () => {
+        setIsCapitan(!isCapitan)
     }
 
     const handleClickButton = () => {
@@ -226,7 +248,7 @@ const Registration = () => {
     </div>
 
     const renderRegForm = () => <div>
-        <h2 id={Styles.title}>Регистрация на Ural GT 2026</h2>
+        <h2 id={Styles.title}>Регистрация на DicePod Team Tournament 2026</h2>
         <FloatingLabelInput
             style={inputStyle}
             onChange={handleChangeName}
@@ -248,7 +270,24 @@ const Registration = () => {
             autoComplete={true}
             autoSelect={true}
             freeSolo={true}
-        />
+            />
+        <div id={Styles.teamRegContainer}>
+            <b id={Styles.teamRegTitle}>Регистрация команды</b>
+            <div id={Styles.isCapitanContainer} onClick={handleChangeIsCapitan}>
+                <p id={Styles.isCapitanTitle}>Вы капитан команды?</p>
+                <Checkbox onClick={handleChangeIsCapitan} checked={isCapitan} />
+            </div>
+            {isCapitan && <p>Пожалуйста, будьте внимательны, команду регистрирует только капитан, остальные игроки оставляют это поле пустым</p>}
+        </div>
+        {isCapitan
+            ? <FloatingLabelInput
+                style={inputStyle}
+                onChange={handleChangeTeamName}
+                label='Название команды'
+                value={teamName}
+            />
+            : null
+        }
         <div id={Styles.buttonContainer}>
             <button
                 id={isDisableButton ? Styles.disableRegButton : Styles.regButton}
@@ -287,33 +326,28 @@ const Registration = () => {
             </div>
             : player.reg || player.isJudge || !meta.isRegOpen || player.isGuest
                 ? <div id='column' className='Chapter'>
+                    {/* TODO: проверить, что всё верно */}
                     {player.isJudge ? <Row title='Кабинет Организатора' navigateTo='admin' /> : null}
                     {player.reg && meta.isRoundActive ? <Row title='Ваша Игра' navigateTo='Play' /> : null}
                     {player.reg && player.roster
                         ? <Row title='Ваш ростер' navigateTo='roster' state={{isInfo: true}} />
                         : null
                     }
+                    {player.team_id ? <Row title='Ваш команда' navigateTo='team' /> : null}
                     {meta.rostersBeingAccepted && player.reg
                         ? <Row title={player.roster ? 'Поменять ростер' : 'Подать ростер'} navigateTo='chooseGrandAlliance' />
                         : null
                     }
+                    {/* TODO: поправить ростера, чтобы по командам разбито было */}
                     {meta.isRostersShow || player.isJudge ? <Row title='Ростера' navigateTo='rosters' /> : null}
-                    {meta.round ? <Row title='Раунды' navigateTo='rounds' state={{title: 'Ural GT 2026', round: meta.round}} /> : null}
-                    {/* {player.isJudge || meta.isPlayersListShow ? <Row title={meta.round ? 'Турнирная Таблица' : 'Список участников'} navigateTo='icePlayers' /> : null} */}
-                    {player.isJudge || meta.isPlayersListShow ? <Row title={meta.round ? 'Турнирная Таблица' : 'Список участников'} navigateTo='players' /> : null}
-                    {player.reg && meta.round === 5 && !player.sport_voted
-                        ? <Row title='Голосование За Спортивность' navigateTo='vote' state={{type: 'sport'}} />
-                        : null
-                    }
-                    {player.reg && ((meta.round === 4 && !meta.isRoundActive) || meta.round === 5) && !player.paint_voted
-                        ? <Row title='Голосование За Покрас' navigateTo='vote' state={{type: 'paint'}} />
-                        :null
-                    }
-                    {player.isJudge || (meta.rostersBeingAccepted && player.reg) ? <Row title='Фотовалидация Армии' navigateTo='photovalidation' /> : null}
-                    {player.isJudge || meta.isChallengesOpen ? <Row title='Челленджи' navigateTo='challenges' /> : null}
+                    {/* TODO: поправить ростера, чтобы по командам разбито было */}
+                    {meta.round ? <Row title='Раунды' navigateTo='rounds' state={{title: 'DicePod Team Tournament 2026', round: meta.round}} /> : null}
+                    {player.isJudge || meta.isPlayersListShow ? <Row title={meta.round ? 'Турнирная Таблица' : 'Список Команд'} navigateTo='teams' /> : null}
+                    {player.isJudge || meta.isPlayersListShow ? <Row title={meta.round ? 'Турнирная Таблица Игроков' : 'Список Игроков'} navigateTo='players' /> : null}
                     <Row title='Правила' navigateTo='mainRules' />
                     <Row title='Калькулятор Урона' navigateTo='calculator' />
-                    {player.isJudge || meta.isTournamentRulesShow ? <Row title='Регламент Ural GT 2026' navigateTo='tournamentRules' /> : null}
+                    {player.isJudge || meta.isTournamentRulesShow ? <Row title='Регламент DicePod Team Tournament 2026' navigateTo='tournamentRules' /> : null}
+                    {player.isJudge || !player.team_id ? <Row title='Как вступить в команду?' navigateTo='infoAboutTeam' /> : null}
                     <Row title='Подсказка во время игры' navigateTo='help' />
                     {meta.isRoundActive && player.reg ? <button id={Styles.button} onClick={handleJudgeCall}>Вызвать Судью</button> : null}
                     {meta.round || !player.reg ? null : <button id={Styles.button} onClick={handleOpenDropModal}>Отказаться от участия на турнире</button>}

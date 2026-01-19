@@ -67,7 +67,7 @@ const Constants = {
             abilityKeywordsName: 'lore_ability_keyword',
             abilityIdName: 'loreAbilityId',
             includesTexts: ['Lore of', 'Spell Lore', 'Arcane'],
-            excludedTexts: ['Lore of the Abyss']
+            excludedTexts: ['Lore of the Abyss', 'Lore of Virulence']
         },
         {
             title: 'Prayer Lores',
@@ -77,7 +77,7 @@ const Constants = {
             abilityGroupType: undefined,
             abilityKeywordsName: 'lore_ability_keyword',
             abilityIdName: 'loreAbilityId',
-            includesTexts: ['Prayer', 'Bless', 'Rites', 'Warbeats', 'Scriptures', 'Bendictions', 'Gifts']
+            includesTexts: ['Prayer', 'Bless', 'Rites', 'Warbeats', 'Scriptures', 'Bendictions', 'Gifts', 'Lore of Virulence']
         }
     ],
     coreDocumentsId: 'e918110c-418e-4a50-90bc-484581a0fa5c',
@@ -537,6 +537,22 @@ const Constants = {
             "id": "6b661b8d-a068-44bd-8ca2-b22375aa54a9",
             "title": "Cyclic Shifts"
         },
+        {
+            "id": "bc224674-f950-437e-80f4-873c9c85e9b3",
+            "title": "Passing Seasons"
+        },
+        {
+            "id": "20f6d702-b151-4871-b0f6-6bcebcb929d8",
+            "title": "Noxious Nexus"
+        },
+        {
+            "id": "7a04de85-32cb-4a8a-b6e1-7d0e3c0e4d53",
+            "title": "The Liferoots"
+        },
+        {
+            "id": "74282134-76f5-47cf-8c1b-c8e79053b465",
+            "title": "Creeping Corruption"
+        }
     ],
     myTgId: 530569849,
     judgesIds: [530569849],

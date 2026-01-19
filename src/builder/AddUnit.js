@@ -67,6 +67,9 @@ const AddUnit = () => {
     } else if (isAuxiliary) {
         units = warscrollIds.map(warscrollId => dataBase.data.warscroll.find(scroll => scroll.id === warscrollId)).filter(unit => !unit.isSpearhead && (showLegends ?  true : !unit.isLegends) && unit.points)
         units = unitsSortesByType(units)
+        if (!showLegends) {
+            units = filter(units, unit => !unit.isLegends)
+        }
     } else if (heroId) {
         // определяем всех юнитов фракции
         const allUnits = warscrollIds.map(warscrollId => dataBase.data.warscroll.find(scroll => scroll.id === warscrollId)).filter(unit => !unit.isSpearhead && (showLegends ?  true : !unit.isLegends) && !includes(unit.referenceKeywords, 'Faction Terrain') && !includes(unit.referenceKeywords, 'Manifestation'))

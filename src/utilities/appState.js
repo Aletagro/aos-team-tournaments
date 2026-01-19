@@ -46,7 +46,9 @@ export const search = {
         Abilities: true,
         'Lore Abilities': true,
         'Regiment of Renown': true
-    }
+    },
+    players: [],
+    teams: []
 }
 
 export const builderFilters = {
@@ -87,6 +89,13 @@ export const players = {
     rosters: [],
     сhallenges: [],
     standing: []
+}
+
+export const teams = {
+    data: [
+        {name: 'Лютые Львы', id: 1, captain_id: '530569849', game_1_opp: 2, game_1_tp: 77},
+        {name: 'Грозные Тигры', id: 2, captain_id: '530569849', game_1_opp: 1, game_1_tp: 63}
+    ]
 }
 
 export const rostersStuck = {

@@ -4,16 +4,16 @@ import useSwipeBack from './utilities/useSwipeBack'
 import Registration from './screens/Registration'
 import RosterScreen from './screens/RosterScreen'
 import TournamentRules from './screens/TournamentRules'
+import InfoAboutTeam from './screens/InfoAboutTeam'
 import AppendixRules from './screens/AppendixRules'
 import Photovalidation from './screens/Photovalidation'
-import Challenges from './screens/Challenges'
 import Players from './screens/Players'
-import IcePlayers from './screens/IcePlayers'
+import Teams from './screens/Teams'
+import Team from './screens/Team'
 import PlayerInfo from './screens/PlayerInfo'
 import Rosters from './screens/Rosters'
 import Rounds from './screens/Rounds'
 import Play from './screens/Play'
-import Vote from './screens/Vote'
 import Admin from './screens/Admin'
 import Help from './screens/Help'
 import MainRules from './screens/MainRules'
@@ -73,16 +73,16 @@ function App() {
       <Route index element={<Registration />} />
       <Route path={'roster'} element={<RosterScreen />} />
       <Route path={'tournamentRules'} element={<TournamentRules />} />
+      <Route path={'infoAboutTeam'} element={<InfoAboutTeam />} />
       <Route path={'appendixRules'} element={<AppendixRules />} />
       <Route path={'photovalidation'} element={<Photovalidation />} />
-      <Route path={'challenges'} element={<Challenges />} />
       <Route path={'players'} element={<Players />} />
-      <Route path={'icePlayers'} element={<IcePlayers />} />
+      <Route path={'teams'} element={<Teams />} />
+      <Route path={'team'} element={<Team />} />
       <Route path={'playerInfo'} element={<PlayerInfo />} />
       <Route path={'rosters'} element={<Rosters />} />
       <Route path={'rounds'} element={<Rounds />} />
       <Route path={'play'} element={<Play />} />
-      <Route path={'vote'} element={<Vote />} />
       <Route path={'admin'} element={<Admin />} />
       <Route path={'help'} element={<Help />} />
       <Route path={'mainRules'} element={<MainRules />} />

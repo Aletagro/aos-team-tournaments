@@ -70,9 +70,7 @@ const Admin = () => {
                 meta.isRostersShow = data.isRostersShow
                 meta.isTournamentRulesShow = data.isTournamentRulesShow
                 meta.isPlayersListShow = data.isPlayersListShow
-                meta.isChallengesOpen = data.isChallengesOpen
                 meta.isRegOpen = data.isRegOpen
-                meta.battleplan = data.battleplan
                 forceUpdate()
             })
             .catch(error => console.error(error))
@@ -215,21 +213,6 @@ const Admin = () => {
             .catch(error => console.error(error))
     }, [handleGetMeta])
 
-    const handleChangeChallengesOpen = useCallback(async () => {
-        await fetch('https://aoscom.online/tournament-meta/any_state', {
-            method: 'PUT',
-            body: JSON.stringify({...meta, isChallengesOpen: !meta.isChallengesOpen}),
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': "application/json, text/javascript, /; q=0.01"
-            }
-        })
-            .then(() => {
-                handleGetMeta()
-            })
-            .catch(error => console.error(error))
-    }, [handleGetMeta])
-
     const handleChangeRegOpen = useCallback(async () => {
         await fetch('https://aoscom.online/tournament-meta/any_state', {
             method: 'PUT',
@@ -257,25 +240,6 @@ const Admin = () => {
 
     const handleChangeMessage = (e) => {
         setMessage(e.target.value)
-    }
-
-    const handleSetBattleplan = useCallback(async (battleplan) => {
-        await fetch('https://aoscom.online/tournament-meta/any_state', {
-            method: 'PUT',
-            body: JSON.stringify({...meta, battleplan}),
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': "application/json, text/javascript, /; q=0.01"
-            }
-        })
-            .then(() => {
-                handleGetMeta()
-            })
-            .catch(error => console.error(error))
-    }, [handleGetMeta])
-
-    const handleClickBattleplan = (battleplan) => () => {
-        handleSetBattleplan(battleplan)
     }
 
     const renderPlayer = (player, table, isFirst) => {
@@ -318,15 +282,6 @@ const Admin = () => {
         <button id={Styles.sendMessageButton} onClick={handleSendMessage}>Отправить</button>
     </div>
 
-    const renderBattleplan = (battleplan) =>
-        <div
-            key={battleplan.id}
-            id={meta.battleplan === battleplan.title ? Styles.activeBattleplan : Styles.battleplan}
-            onClick={handleClickBattleplan(battleplan.title)}
-        >
-            {battleplan.title}
-        </div>
-
     return <div id='column' className='Chapter'>
         <b id={Styles.text}>Состояние турнира</b>
         <p id={Styles.text}>Статус: {setTournamentStatus(meta.isRoundActive, meta.round)}</p>
@@ -337,7 +292,6 @@ const Admin = () => {
         <button id={Styles.button} onClick={handleChangeRostersShow}>{meta.isRostersShow ? 'Скрыть ростера' : 'Открыть ростера для всех'}</button>
         <button id={Styles.button} onClick={handleChangeTournamentRulesShow}>{meta.isTournamentRulesShow ? 'Скрыть регламент' : 'Открыть регламент для всех'}</button>
         <button id={Styles.button} onClick={handleChangePlayersListShow}>{meta.isPlayersListShow ? 'Скрыть список участников' : 'Открыть список участников для всех'}</button>
-        <button id={Styles.button} onClick={handleChangeChallengesOpen}>{meta.isChallengesOpen ? 'Закрыть челленджи' : 'Открыть челленджи'}</button>
         <button id={Styles.button} onClick={handleChangeRegOpen}>{meta.isRegOpen ? 'Закрыть регистрацию' : 'Открыть регистрацию'}</button>
         <button id={meta.isRoundActive ? Styles.disableButton : Styles.button} onClick={handleCreateParings} disabled={meta.isRoundActive}>Создать паринги {meta.round + 1} раунда</button>
         {isEmpty(pairings)
@@ -356,10 +310,6 @@ const Admin = () => {
         <button id={Styles.button} onClick={handleChangeRoundActive}>{meta.isRoundActive ? 'Закончить раунд' : 'Начать раунд'}</button>
         {renderSendMessage()}
         <hr/>
-        <b id={Styles.text}>Установить активную миссию</b>
-        <div id={Styles.battleplansContainer}>
-            {map(Constants.tournamentBattleplans, renderBattleplan)}
-        </div>
         <ToastContainer />
     </div>
 }
