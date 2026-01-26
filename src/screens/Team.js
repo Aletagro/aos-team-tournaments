@@ -112,12 +112,13 @@ const Team = () => {
 
     const handleSendMessageToDropedPlayer = useCallback(async (playerId) => {
         const message = 'Вас удалили из команды'
-        await fetch(`https://aoscom.online/messages/send_personal_message/?tg_id=${playerId}&message=${message}`)
+        const playerTgId = find(_players, ['id', playerId])?.tgId
+        await fetch(`https://aoscom.online/messages/send_personal_message/?tg_id=${playerTgId}&message=${message}`)
             .catch(error => console.error(error))
       }, [])
 
     const handleDropPlayerRequest = useCallback(async (playerId) => {
-        await fetch(`https://aoscom.online/teams/something_team_player/?id=${playerId}&column=team_id&value=${null}`, {
+        await fetch(`https://aoscom.online/teams/something_team_player/?id=${playerId}&column=team_id&value=${0}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -137,7 +138,7 @@ const Team = () => {
 
     const handleDropPlayer = (playerId) => () => {
         handleCloseModal()
-        setPlayers(filter(players, p => p.tgId !== playerId))
+        setPlayers(filter(players, p => p.id !== playerId))
         handleDropPlayerRequest(playerId)
     }
 
@@ -196,7 +197,7 @@ const Team = () => {
     </div>
 
     const renderPlayer = (player, index) => <button key={index} id={Styles.playContainer} onClick={handleClickPlayer(player)}>
-        {renderPlayerRow(index + 1, `${player.surname} ${player.name}`, player.army, index % 2, player.tgId)}
+        {renderPlayerRow(index + 1, `${player.surname} ${player.name}`, player.army, index % 2, player.id)}
     </button>
     
     return <div id='column' className='Chapter'>

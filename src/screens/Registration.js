@@ -140,6 +140,7 @@ const Registration = () => {
     useEffect(() => {
         if (!player.isRequested) {
             player.isRequested = true
+            // fetch(`https://aoscom.online/teams/team_player/?tg_id=${530569849}`)
             fetch(`https://aoscom.online/teams/team_player/?tg_id=${user?.id}`)
                 .then(response => response.json())
                 .then(data => {
@@ -329,7 +330,7 @@ const Registration = () => {
                         ? <Row title='Ваш ростер' navigateTo='roster' state={{isInfo: true}} />
                         : null
                     }
-                    {player?.info?.team_id ? <Row title='Ваш команда' navigateTo='team' state={{team: find(teams.data, ['id', player?.info?.team_id])}} /> : null}
+                    {player?.info?.team_id ? <Row title='Ваша команда' navigateTo='team' state={{team: find(teams.data, ['id', player?.info?.team_id])}} /> : null}
                     {meta.rostersBeingAccepted && player.reg
                         ? <Row title={player.roster ? 'Поменять ростер' : 'Подать ростер'} navigateTo='chooseGrandAlliance' />
                         : null
