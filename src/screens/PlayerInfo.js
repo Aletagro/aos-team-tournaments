@@ -1,4 +1,4 @@
-import React, {useReducer, useState, useCallback, useEffect} from 'react'
+import React, {useReducer, useState, useCallback} from 'react'
 import {useNavigate, useLocation} from 'react-router-dom'
 import {ToastContainer, toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -7,19 +7,14 @@ import Roster from '../components/Roster'
 import RosterEasy from '../components/RosterEasy'
 import Checkbox from '../components/Checkbox'
 import Modal from '../components/Modal'
-import PhotoGallery from '../components/PhotoGallery'
 import FloatingLabelInput from '../components/FloatingLabelInput'
-import {players, player as _player, rosterViewType, googleDrive} from '../utilities/appState'
+import {players, player as _player, rosterViewType, teams} from '../utilities/appState'
 
 import map from 'lodash/map'
 import get from 'lodash/get'
 import find from 'lodash/find'
-import size from 'lodash/size'
 
 import Styles from './styles/PlayerInfo.module.css'
-
-const FOLDER_ID = process.env.REACT_APP_FOLDER_ID
-const API_KEY = process.env.REACT_APP_API_KEY
 
 const PlayerInfo = () => {
     const navigate = useNavigate()
@@ -33,38 +28,11 @@ const PlayerInfo = () => {
     if (roster) {
         roster = JSON.parse(roster)
     }
+    const team = find(teams.data, ['id', player.team_id])?.name
     const [modalData, setModalData] = useState({visible: false, title: ''})
     const [isPlayerDrop, setIsPlayerDrop] = useState(false)
     const [isPlayerActive, setIsPlayerActive] = useState(Boolean(player?.status))
     const [message, setMessage] = useState('')
-    const [photos, setPhotos] = useState([])
-    const [paintChecked, setPaintChecked] = useState(player.paint_checked)
-
-    const loadPhotos = useCallback(async () => {
-        if (!size(googleDrive.folders)) {
-            const response = await fetch(
-                `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents&key=${API_KEY}&pageSize=150`
-            )
-            const data = await response.json()
-            googleDrive.folders = data?.files
-        }
-        const playerName = `${player.surname} ${player.name}`
-        const folder = find(googleDrive.folders, ['name', playerName])
-        if (folder?.id) {
-            if (!googleDrive.players[playerName]) {
-                const responsePhotos = await fetch(
-                    `https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents&key=${API_KEY}`
-                )
-                const photosData = await responsePhotos.json()
-                googleDrive.players[playerName] = photosData?.files
-            }
-            setPhotos(googleDrive.players[playerName])
-        }
-    }, [player.surname, player.name])
-
-    useEffect(() => {
-        loadPhotos()
-    }, [loadPhotos]) 
 
     const handleClickAllegiance = () => {
         navigate('/army', {state: {title: rosterInfo.allegiance, allegianceId: roster.allegianceId}})
@@ -93,7 +61,7 @@ const PlayerInfo = () => {
 
     const handleDropPlayer = useCallback(async () => {
         handleCloseModal()
-        await fetch(`https://aoscom.online/players/?tg_id=${player?.tgId}`, {
+        await fetch(`https://aoscom.online//teams/delete_team_player/?id=${player?.id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -105,11 +73,11 @@ const PlayerInfo = () => {
                 forceUpdate()
             })
             .catch(error => console.error(error))
-      }, [player?.tgId])
+      }, [player?.id])
 
     const handlChangeStatus = useCallback(async () => {
         handleCloseModal()
-        await fetch(`https://aoscom.online/players/status/?tg_id=${player?.tgId}`, {
+        await fetch(`https://aoscom.online/teams/something_team_player/?id=${player?.id}&column=status&value=${!player.status}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -121,7 +89,7 @@ const PlayerInfo = () => {
                 forceUpdate()
             })
             .catch(error => console.error(error))
-      }, [player?.tgId, isPlayerActive])
+      }, [player, isPlayerActive])
 
     const handleSendMessage = useCallback(async (_message, customMessage) => {
         await fetch(`https://aoscom.online/messages/send_personal_message/?tg_id=${player?.tgId}&message=${customMessage ? _message : message}`)
@@ -136,26 +104,6 @@ const PlayerInfo = () => {
     const handleChangeMessage = (e) => {
         setMessage(e.target.value)
     }
-
-    const handleClickPhotovalidation = useCallback(async () => {
-        await fetch(`https://aoscom.online/players/something/?id=${player?.id}&column=paint_checked&value=${paintChecked ? 0 : 1}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': "application/json, text/javascript, /; q=0.01"
-            }
-        })
-            .then(() => {
-                toast.success('Значение фотовалидия изменено', Constants.toastParams)
-                handleSendMessage(paintChecked ? 'Фотовалидация вашего ростера отклонена' : 'Вы успешно прошли фотовалидацию ростера', true)
-                setPaintChecked(!paintChecked)
-                forceUpdate()
-            })
-            .catch(error => {
-                console.error(error)
-                toast.success('Возникла ошибка', Constants.toastParams)
-            })
-      }, [player, handleSendMessage, paintChecked])
 
     const renderDropModalConent = () => <div id={Styles.modal}>
         <button id={Styles.modalButton} onClick={handleCloseModal}>Нет</button>
@@ -202,7 +150,7 @@ const PlayerInfo = () => {
             ? <p id={Styles.title}>Статус игрока: <b>{isPlayerActive ? 'Активен' : 'Не активен'}</b></p>
             : null
         }
-        <p id={Styles.title}><b>Город:</b> {player.city}</p>
+        <p id={Styles.title}><b>Команда:</b> {team}</p>
         <p id={Styles.title}><b>Гранд Альянс:</b> {rosterInfo?.grandAlliance}</p>
         <p id={Styles.title}><b>Армия:</b> {rosterInfo?.allegiance}</p>
         {player.game_1_opp
@@ -230,13 +178,8 @@ const PlayerInfo = () => {
             </>
             : null
         }
-        {size(photos) && _player.isJudge
-            ? <PhotoGallery photos={photos} />
-            : null
-        }
         {_player.isJudge
             ? <> 
-                <button id={Styles.rulesButton} onClick={handleClickPhotovalidation}>{paintChecked ? 'Отменить фотовалидацию' : 'Принять фотовалидацию'}</button>
                 <button id={Styles.rulesButton} onClick={handleOpenStatusModal}>Изменить статус игрока на {isPlayerActive ? '"Не активен"' : '"Активен"'}</button>
                 <button id={Styles.rulesButton} onClick={handleOpenDropModal}>Удалить игрока с турнира</button>
                 {renderSendMessage()}

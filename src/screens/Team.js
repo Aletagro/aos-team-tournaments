@@ -1,4 +1,4 @@
-import React, {useReducer, useState, useCallback} from 'react'
+import React, {useReducer, useState, useCallback, useEffect} from 'react'
 import {useNavigate, useLocation} from 'react-router-dom'
 import {ToastContainer, toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -13,6 +13,7 @@ import get from 'lodash/get'
 import find from 'lodash/find'
 import size from 'lodash/size'
 import filter from 'lodash/filter'
+import isArray from 'lodash/isArray'
 
 import Styles from './styles/Team.module.css'
 
@@ -25,7 +26,18 @@ const Team = () => {
     const [isTeamDrop, setIsTeamDrop] = useState(false)
     const [isTeamActive, setIsTeamActive] = useState(Boolean(team?.status))
     const [message, setMessage] = useState('')
-    const [players, setPlayers] = useState(filter(_players.data, ['team_id', team.id]))
+    const [players, setPlayers] = useState([])
+
+    useEffect(() => {
+        fetch(`https://aoscom.online/teams/all_players_from_team/?team_id=${team?.id}`)
+            .then(response => response.json())
+            .then(data => {
+                if (isArray(data)) {
+                    setPlayers(data)
+                }
+            })
+            .catch(error => console.error(error))
+    }, [team?.id])
 
     const handleClickTeam = (opponent) => () => {
         navigate('/team', {state: {team: opponent, title: opponent.name}})
@@ -54,7 +66,7 @@ const Team = () => {
 
     const handleDropTeam = useCallback(async () => {
         handleCloseModal()
-        await fetch(`https://aoscom.online/team/?id=${team?.id}`, {
+        await fetch(`https://aoscom.online/teams/delete_team/?id=${team?.id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -70,7 +82,7 @@ const Team = () => {
 
     const handlChangeStatus = useCallback(async () => {
         handleCloseModal()
-        await fetch(`https://aoscom.online/team/something/?id=${team?.id}&column=status&value=${team.status}`, {
+        await fetch(`https://aoscom.online/teams/something_team/?id=${team?.id}&column=status&value=${!team.status}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -105,7 +117,7 @@ const Team = () => {
       }, [])
 
     const handleDropPlayerRequest = useCallback(async (playerId) => {
-        await fetch(`https://aoscom.online/players/something/?id=${playerId}&column=team_id&value=${null}`, {
+        await fetch(`https://aoscom.online/teams/something_team_player/?id=${playerId}&column=team_id&value=${null}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

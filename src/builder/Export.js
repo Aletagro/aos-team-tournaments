@@ -88,7 +88,7 @@ const Export = () => {
     })
 
     const getPlayerInfo = useCallback(async () => {
-        fetch(`https://aoscom.online/players/player/?tg_id=${user?.id}`)
+        fetch(`https://aoscom.online/teams/team_player/?tg_id=${user?.id}`)
             .then(response => response.json())
             .then(data => {
                 player.roster = data.roster
@@ -201,7 +201,7 @@ ${roster.points.all}/${roster.pointsLimit} Pts
             spellsLore: roster.spellsLore,
             tactics: map(roster.tactics, 'name')
         }
-        await fetch(`https://aoscom.online/rosters/?tg_id=${user?.id}&roster=${JSON.stringify(_roster)}&r_stat=${JSON.stringify(r_stat)}`, {
+        await fetch(`https://aoscom.online/teams/update_teampl_roster/?tg_id=${user?.id}&roster=${JSON.stringify(_roster)}&r_stat=${JSON.stringify(r_stat)}`, {
             method: 'PUT'
         })
             .then(response => {

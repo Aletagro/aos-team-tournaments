@@ -14,6 +14,7 @@ import PlayerInfo from './screens/PlayerInfo'
 import Rosters from './screens/Rosters'
 import Rounds from './screens/Rounds'
 import Play from './screens/Play'
+import Pairings from './screens/Pairings'
 import Admin from './screens/Admin'
 import Help from './screens/Help'
 import MainRules from './screens/MainRules'
@@ -83,6 +84,7 @@ function App() {
       <Route path={'rosters'} element={<Rosters />} />
       <Route path={'rounds'} element={<Rounds />} />
       <Route path={'play'} element={<Play />} />
+      <Route path={'pairings'} element={<Pairings />} />
       <Route path={'admin'} element={<Admin />} />
       <Route path={'help'} element={<Help />} />
       <Route path={'mainRules'} element={<MainRules />} />

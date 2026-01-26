@@ -32,6 +32,7 @@ const Admin = () => {
     // }, [playerId, key, value])
 
     const handleCreateParings = useCallback(async () => {
+        // TODO
         await fetch(`https://aoscom.online/parings/?next_round=${meta.round + 1}`)
             .then(response => response.json())
             .then(data => {
@@ -61,7 +62,7 @@ const Admin = () => {
     }
 
     const handleGetMeta = useCallback(async () => {
-        fetch('https://aoscom.online/tournament-meta/')
+        fetch('https://aoscom.online/tournament-meta/teams')
             .then(response => response.json())
             .then(data => {
                 meta.round = data.round
@@ -77,7 +78,7 @@ const Admin = () => {
     }, [])
 
     const handleChangeRoundActiveMeta = useCallback(async () => {
-        await fetch('https://aoscom.online/tournament-meta/any_state', {
+        await fetch('https://aoscom.online/tournament-meta/teams_any_state', {
             method: 'PUT',
             body: JSON.stringify({...meta, isRoundActive: !meta.isRoundActive}),
             headers: {
@@ -93,6 +94,7 @@ const Admin = () => {
     }, [handleGetMeta])
 
     const handleSetOppPower = useCallback(async () => {
+        // TODO
         fetch('https://aoscom.online/rounds/opp_power/', {
             method: 'PUT'
         })
@@ -107,7 +109,7 @@ const Admin = () => {
     }, [handleChangeRoundActiveMeta, handleSetOppPower])
 
     const handleStartRoundMeta = useCallback(async () => {
-        await fetch('https://aoscom.online/tournament-meta/any_state', {
+        await fetch('https://aoscom.online/tournament-meta/teams_any_state', {
             method: 'PUT',
             body: JSON.stringify({...meta, round: meta.round + 1}),
             headers: {
@@ -123,6 +125,7 @@ const Admin = () => {
 
 
     const handleStartRound = useCallback(async () => {
+        // TODO
         await fetch(`https://aoscom.online/parings/update_parings/?next_round=${meta.round + 1}`, {
             method: 'PUT',
             body: JSON.stringify(pairings),
@@ -154,7 +157,7 @@ const Admin = () => {
     }
 
     const handleChangeRosterAccepted = useCallback(async () => {
-        await fetch('https://aoscom.online/tournament-meta/any_state', {
+        await fetch('https://aoscom.online/tournament-meta/teams_any_state', {
             method: 'PUT',
             body: JSON.stringify({...meta, rostersBeingAccepted: !meta.rostersBeingAccepted}),
             headers: {
@@ -169,7 +172,7 @@ const Admin = () => {
     }, [handleGetMeta])
 
     const handleChangeRostersShow = useCallback(async () => {
-        await fetch('https://aoscom.online/tournament-meta/any_state', {
+        await fetch('https://aoscom.online/tournament-meta/teams_any_state', {
             method: 'PUT',
             body: JSON.stringify({...meta, isRostersShow: !meta.isRostersShow}),
             headers: {
@@ -184,7 +187,7 @@ const Admin = () => {
     }, [handleGetMeta])
 
     const handleChangeTournamentRulesShow = useCallback(async () => {
-        await fetch('https://aoscom.online/tournament-meta/any_state', {
+        await fetch('https://aoscom.online/tournament-meta/teams_any_state', {
             method: 'PUT',
             body: JSON.stringify({...meta, isTournamentRulesShow: !meta.isTournamentRulesShow}),
             headers: {
@@ -199,7 +202,7 @@ const Admin = () => {
     }, [handleGetMeta])
 
     const handleChangePlayersListShow = useCallback(async () => {
-        await fetch('https://aoscom.online/tournament-meta/any_state', {
+        await fetch('https://aoscom.online/tournament-meta/teams_any_state', {
             method: 'PUT',
             body: JSON.stringify({...meta, isPlayersListShow: !meta.isPlayersListShow}),
             headers: {
@@ -214,7 +217,7 @@ const Admin = () => {
     }, [handleGetMeta])
 
     const handleChangeRegOpen = useCallback(async () => {
-        await fetch('https://aoscom.online/tournament-meta/any_state', {
+        await fetch('https://aoscom.online/tournament-meta/teams_any_state', {
             method: 'PUT',
             body: JSON.stringify({...meta, isRegOpen: !meta.isRegOpen}),
             headers: {
@@ -230,7 +233,7 @@ const Admin = () => {
 
     const handleSendMessage = useCallback(async () => {
         setMessage('')
-        await fetch(`https://aoscom.online/messages/send_mas_message/?message=${message}`)
+        await fetch(`https://aoscom.online//messages/send_mas_teams_players_message/?message=${message}`)
             .then(() => {
                 toast.success('Сообщение всем игрокам отправлено', Constants.toastParams)
                 forceUpdate()

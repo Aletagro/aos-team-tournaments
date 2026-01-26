@@ -37,7 +37,7 @@ const Rosters = () => {
 
     useEffect(() => {
         if (!players.rosters.length) {
-            fetch('https://aoscom.online/rosters/')
+            fetch('https://aoscom.online/teams/get_all_teampl_rosters/')
                 .then(response => response.json())
                 .then(data => {
                     players.rosters = data

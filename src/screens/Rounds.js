@@ -20,7 +20,7 @@ const Rounds = () => {
 
     useEffect(() => {
         if (!rounds[rounds.selected]) {
-            fetch(`https://aoscom.online/rounds/?cur_round=${rounds.selected}`)
+            fetch(`https://aoscom.online/teams/teams_round/?cur_round=${rounds.selected}`)
                 .then(response => response.json())
                 .then(data => {
                     rounds[rounds.selected] = data
@@ -29,7 +29,7 @@ const Rounds = () => {
                 .catch(error => console.error(error))
         }
         if (!players.data.length) {
-            fetch('https://aoscom.online/players/')
+            fetch('https://aoscom.online/teams/all_teams_players/')
                 .then(response => response.json())
                 .then(data => {
                     players.data = data

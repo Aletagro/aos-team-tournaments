@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useReducer, useCallback} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {players, meta} from '../utilities/appState'
+import {players, player, meta} from '../utilities/appState'
 import FloatingLabelInput from '../components/FloatingLabelInput'
 import Checkbox from '../components/Checkbox'
 import Constants from '../Constants'
 
 import min from 'lodash/min'
 import max from 'lodash/max'
+import map from 'lodash/map'
 import find from 'lodash/find'
 import isNull from 'lodash/isNull'
 
@@ -24,6 +25,13 @@ const inputStyle = {
     'fontFamily': 'Minion Pro Regular'
 }
 
+const battleplansForRounds = [
+    ['Passing Seasons', 'Roiling Roots', 'Cyclic Shifts'],
+    ['Surge of Slaughter', 'Linked Ley Lines', 'Noxious Nexus'],
+    ['The Liferoots', 'Bountiful Equinox', 'Lifecycle'],
+    ['Creeping Corruption', 'Grasp of Thorns', 'Linked Ley Lines']
+]
+
 const Play = () => {
     const navigate = useNavigate()
     const user = tg.initDataUnsafe?.user
@@ -34,11 +42,11 @@ const Play = () => {
     const [isFinished, setIsFinished] = useState(false)
     const [info, setInfo] = useState()
     const [minorWin, setMinorWin] = useState(null)
-    const battleplan = find(Constants.tournamentBattleplans, ['title', meta.battleplan])
+    const battleplans = map(battleplansForRounds[meta.round ? meta.round - 1 : 0], item => find(Constants.tournamentBattleplans, ['title', item]))
     const disableButton = !firstPlayer || !secondPlayer || (firstPlayer === secondPlayer ? isNull(minorWin) : false)
 
     useEffect(() => {
-        fetch(`https://aoscom.online/rounds/play/?tg_id=${user?.id}&cur_round=${meta.round}`)
+        fetch(`https://aoscom.online/teams/one_teams_game/?id=${player?.info?.id}&cur_round=${meta.round}`)
             .then(response => response.json())
             .then(data => {
                 const firstPlayer = find(players.data, ['id',  min([Number(data.first_player_id), Number(data.second_player_id)])])
@@ -54,7 +62,7 @@ const Play = () => {
 
     useEffect(() => {
         if (!players.rosters.length) {
-            fetch('https://aoscom.online/rosters/')
+            fetch('https://aoscom.online/teams/get_all_teampl_rosters/')
                 .then(response => response.json())
                 .then(data => {
                     players.rosters = data
@@ -79,11 +87,12 @@ const Play = () => {
         navigate('/roster', {state: {title: `${info.secondPlayer.surname} ${info.secondPlayer.name}`, playerId: info.secondPlayer.id, isInfo: true}})
     }
 
-    const handleClickBattleplan = () => {
+    const handleClickBattleplan = (battleplan) => () => {
         navigate('/battleplan', {state: {title:battleplan.title, battleplan}})
     }
 
     const handleSendResult = useCallback(async () => {
+        // TODO
         await fetch(`https://aoscom.online/rounds/play/?cur_round=${info?.round}&cur_table=${info?.table}&vp_first=${firstPlayer}&vp_second=${secondPlayer}&minor_win=${minorWin || 0}`, {
             method: 'PUT'
         })
@@ -103,6 +112,14 @@ const Play = () => {
     const handleClickCheckbox = (value) => () => {
         setMinorWin(value)
     }
+
+    const renderBattleplan = (battleplan, index) => <button
+        key={index}
+        id={Styles.rosterButton}
+        onClick={handleClickBattleplan(battleplan)}
+    >
+        Миссиия: {battleplan.title}
+    </button>
 
     if (isFinished) {
         return <div id='column' className='Chapter'>
@@ -162,15 +179,7 @@ const Play = () => {
             </div>
             : null
         }
-        {battleplan
-            ? <button
-                id={Styles.rosterButton}
-                onClick={handleClickBattleplan}
-            >
-                Миссиия: {battleplan.title}
-            </button>
-            : null
-        }
+        {map(battleplans, renderBattleplan)}
         <button
             id={disableButton ? Styles.disableButton : Styles.button}
             onClick={handleSendResult}

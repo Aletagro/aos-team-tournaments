@@ -44,6 +44,7 @@ const RoundPlay = ({play, table, round, onOpenModal, onCloseModal}) => {
 
     const handleChangeResult = useCallback(async () => {
         setIsChangeResultBlockShow(false)
+        // TODO
         await fetch(`https://aoscom.online/rounds/play/?cur_round=${round}&cur_table=${table}&vp_first=${firstValue}&vp_second=${secondValue}&minor_win=${minorWin || 0}`, {
             method: 'PUT',
             headers: {

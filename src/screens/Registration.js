@@ -1,10 +1,9 @@
 import React, {useEffect, useReducer, useState, useCallback} from 'react'
-import Autocomplete from '@mui/joy/Autocomplete'
 import {ToastContainer, toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import CircularProgress from '@mui/joy/CircularProgress'
 import Constants from '../Constants'
-import {player, players, fetching, meta} from '../utilities/appState'
+import {player, players, fetching, meta, teams} from '../utilities/appState'
 import FloatingLabelInput from '../components/FloatingLabelInput'
 import Row from '../components/Row'
 import HeaderImage from '../components/HeaderImage'
@@ -12,7 +11,11 @@ import Modal from '../components/Modal'
 import Checkbox from '../components/Checkbox'
 import Image from '../images/DicePod.jpg'
 
+import get from 'lodash/get'
 import size from 'lodash/size'
+import find from 'lodash/find'
+import isArray from 'lodash/isArray'
+import isEmpty from 'lodash/isEmpty'
 import includes from 'lodash/includes'
 
 import Styles from './styles/Registration.module.css'
@@ -28,34 +31,7 @@ const inputStyle = {
     'fontFamily': 'Minion Pro Regular'
 }
 
-const cities = [
-    'Екатеринбург',
-    'Москва',
-    'Новосибирск',
-    'Нижний Новгород',
-    'Казань',
-    'Санкт-Петербург',
-    'Краснодар',
-    'Тюмень',
-    'Ханты-Мансийск',
-    'Томск',
-    'Новочеркасск',
-    'Улан-Удэ',
-    'Ижевск',
-    'Новый Уренгой',
-    'Кемерово',
-    'Омск',
-    'Барнаул',
-    'Челябинск',
-    'Пермь',
-    'Соликамск',
-    'Сургут',
-    'Кемерево',
-    'Нижний Тагил',
-    'Самара'
-]
-
-const PLAYERS_LIMIT = 100
+const PLAYERS_LIMIT = 300
 
 const Registration = () => {
     // eslint-disable-next-line
@@ -63,43 +39,66 @@ const Registration = () => {
     const user = tg.initDataUnsafe?.user
     const [name, setName] = useState(user?.first_name || '')
     const [surname, setSurname] = useState(user?.last_name || '')
-    const [city, setCity] = useState('')
     const [teamName, setTeamName] = useState('')
     const [isCapitan, setIsCapitan] = useState(false)
     const [modalData, setModalData] = useState({visible: false, title: ''})
+    const [playerId, setPlayerId] = useState(undefined)
+    const [teamId, setTeamId] = useState(undefined)
 
-    const isDisableButton = !name || !surname || !city || (isCapitan ? !teamName : false)
+    const isDisableButton = !name || !surname || (isCapitan ? !teamName : false)
     if (includes(Constants.judgesIds, user?.id)) {
         player.isJudge = true
     }
 
+    const handleChangeTeamToCaptain = useCallback(async (playerId, teamId) => {
+        await fetch(`https://aoscom.online/teams/something_team_player/?id=${playerId}&column=team_id&value=${teamId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': "application/json, text/javascript, /; q=0.01"
+            }
+        })
+    }, [])
+
+    useEffect(() => {
+        if (playerId && teamId) {
+            handleChangeTeamToCaptain(playerId, teamId)
+        }
+    }, [playerId, teamId, handleChangeTeamToCaptain])
+
     const handleRegUser = useCallback(async () => {
-        await fetch('https://aoscom.online/players/reg', {
+        await fetch('https://aoscom.online/teams/add_team_player', {
             method: 'POST',
-            body: JSON.stringify({tgId: user?.id, name, surname, city}),
+            body: JSON.stringify({tgId: user?.id, name, surname}),
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': "application/json, text/javascript, /; q=0.01"
             }
         })
             .then(response => response.json())
+            .then(data => {
+                setPlayerId(get(data, 'player_info.id'))
+            })
             .catch(error => console.error(error))
         if (isCapitan && teamName) {
-            await fetch('https://aoscom.online/team/reg', {
+            await fetch('https://aoscom.online/teams/reg_team', {
                 method: 'POST',
-                body: JSON.stringify({tgId: user?.id, teamName}),
+                body: JSON.stringify({captain_id: user?.id, name: teamName}),
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': "application/json, text/javascript, /; q=0.01"
                 }
             })
                 .then(response => response.json())
+                .then(data => {
+                    setTeamId(get(data, 'player_info.id'))
+                })
                 .catch(error => console.error(error))
         }
-      }, [name, surname, city, user?.id, teamName, isCapitan])
+      }, [name, surname, user?.id, teamName, isCapitan])
 
     const handleGetPlayers = useCallback(async (withReg) => {
-        await fetch('https://aoscom.online/players/')
+        await fetch('https://aoscom.online/teams/all_teams_players/')
             .then(response => response.json())
             .then(data => {
                 players.data = data
@@ -116,13 +115,13 @@ const Registration = () => {
 
     const handleSendMessage = useCallback(async () => {
         const message = `${player.info.surname} ${player.info.name} отказался от участия в турнире`
-        await fetch(`https://aoscom.online/messages/send_personal_message/?tg_id=${200821933}&message=${message}`)
+        await fetch(`https://aoscom.online/messages/send_personal_message/?tg_id=${306287992}&message=${message}`)
             .catch(error => console.error(error))
       }, [])
 
     const handleDrop = useCallback(async () => {
         handleCloseModal()
-        await fetch(`https://aoscom.online/players/?tg_id=${user?.id}`, {
+        await fetch(`https://aoscom.online/teams/delete_team_player/?id=${player?.info?.id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -136,13 +135,12 @@ const Registration = () => {
                 handleSendMessage()
             })
             .catch(error => console.error(error))
-      }, [user?.id, handleSendMessage])
+      }, [handleSendMessage])
 
     useEffect(() => {
         if (!player.isRequested) {
             player.isRequested = true
-            // fetch(`https://aoscom.online/players/player/?tg_id=${530569849}`)
-            fetch(`https://aoscom.online/players/player/?tg_id=${user?.id}`)
+            fetch(`https://aoscom.online/teams/team_player/?tg_id=${user?.id}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.tgId) {
@@ -160,7 +158,6 @@ const Registration = () => {
                 })
                 .catch(error => console.error(error))
             // запрос ростеров юзера из основного приложения
-            // fetch(`https://aoscom.online/rosters_db/rosters_by_user?tg_id=${530569849}`)
             fetch(`https://aoscom.online/rosters_db/rosters_by_user?tg_id=${user?.id}`)
                 .then(response => response.json())
                 .then(data => {
@@ -177,7 +174,7 @@ const Registration = () => {
     }, [handleGetPlayers])
 
     useEffect(() => {
-        fetch('https://aoscom.online/tournament-meta/')
+        fetch('https://aoscom.online/tournament-meta/teams')
             .then(response => response.json())
             .then(data => {
                 meta.round = data.round
@@ -187,10 +184,23 @@ const Registration = () => {
                 meta.isTournamentRulesShow = data.isTournamentRulesShow
                 meta.isPlayersListShow = data.isPlayersListShow
                 meta.isRegOpen = data.isRegOpen
-                meta.battleplan = data.battleplan
                 forceUpdate()
             })
             .catch(error => console.error(error))
+    }, [])
+
+    useEffect(() => {
+        if (isEmpty(teams.data)) {
+            fetch('https://aoscom.online/teams/all_teams')
+                .then(response => response.json())
+                .then(data => {
+                    if (isArray(data)) {
+                        teams.data = data
+                        forceUpdate()
+                    }
+                })
+                .catch(error => console.error(error))
+        }
     }, [])
 
     const handleCloseModal = () => {
@@ -207,10 +217,6 @@ const Registration = () => {
 
     const handleChangeSurname = (e) => {
         setSurname(e.target.value)
-    }
-
-    const handleChangeCity = (e, value) => {
-        setCity(value || e.target.value)
     }
 
     const handleChangeTeamName = (e, value) => {
@@ -261,16 +267,6 @@ const Registration = () => {
             label='Ваша фамилия'
             value={surname}
         />
-        <Autocomplete
-            placeholder='Город'
-            onInputChange={handleChangeCity}
-            options={cities.sort()}
-            sx={inputStyle}
-            value={city}
-            autoComplete={true}
-            autoSelect={true}
-            freeSolo={true}
-            />
         <div id={Styles.teamRegContainer}>
             <b id={Styles.teamRegTitle}>Регистрация команды</b>
             <div id={Styles.isCapitanContainer} onClick={handleChangeIsCapitan}>
@@ -326,21 +322,21 @@ const Registration = () => {
             </div>
             : player.reg || player.isJudge || !meta.isRegOpen || player.isGuest
                 ? <div id='column' className='Chapter'>
-                    {/* TODO: проверить, что всё верно */}
                     {player.isJudge ? <Row title='Кабинет Организатора' navigateTo='admin' /> : null}
                     {player.reg && meta.isRoundActive ? <Row title='Ваша Игра' navigateTo='Play' /> : null}
+                    {(player.isJudge || player.isCapitan) && meta.isRoundActive ? <Row title='Ваша Игра' navigateTo='pairings' /> : null}
                     {player.reg && player.roster
                         ? <Row title='Ваш ростер' navigateTo='roster' state={{isInfo: true}} />
                         : null
                     }
-                    {player.team_id ? <Row title='Ваш команда' navigateTo='team' /> : null}
+                    {player?.info?.team_id ? <Row title='Ваш команда' navigateTo='team' state={{team: find(teams.data, ['id', player?.info?.team_id])}} /> : null}
                     {meta.rostersBeingAccepted && player.reg
                         ? <Row title={player.roster ? 'Поменять ростер' : 'Подать ростер'} navigateTo='chooseGrandAlliance' />
                         : null
                     }
-                    {/* TODO: поправить ростера, чтобы по командам разбито было */}
+                    {/* TODO: поправить, чтобы по командам разбито было */}
                     {meta.isRostersShow || player.isJudge ? <Row title='Ростера' navigateTo='rosters' /> : null}
-                    {/* TODO: поправить ростера, чтобы по командам разбито было */}
+                    {/* TODO: поправить, чтобы по командам разбито было */}
                     {meta.round ? <Row title='Раунды' navigateTo='rounds' state={{title: 'DicePod Team Tournament 2026', round: meta.round}} /> : null}
                     {player.isJudge || meta.isPlayersListShow ? <Row title={meta.round ? 'Турнирная Таблица' : 'Список Команд'} navigateTo='teams' /> : null}
                     {player.isJudge || meta.isPlayersListShow ? <Row title={meta.round ? 'Турнирная Таблица Игроков' : 'Список Игроков'} navigateTo='players' /> : null}

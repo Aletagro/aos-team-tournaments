@@ -232595,7 +232595,7 @@
       {
         "id": "07bad216-d13f-425c-ac3c-e8d05b0f5ded",
         "name": "Knell of Doom",
-        "phaseDetails": "Once Per Battle (Army), Enemy Hero Phase",
+        "phaseDetails": "Once Per Turn (Army), Enemy Hero Phase",
         "phase": "heroPhase",
         "castingValue": null,
         "cpCost": null,

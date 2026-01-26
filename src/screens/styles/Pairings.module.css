@@ -1,0 +1,68 @@
+#checkedPlayersContainer {
+  display: flex;
+  margin-bottom: 12px;
+}
+#checkedPlayersTeam {
+  width: 50%;
+  text-align: center;
+}
+#teamName {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+#createPairButton {
+  background: rgb(46, 46, 49);
+  color: white;
+  border-width: 0px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  padding: 12px;
+  font-family: 'Minion Pro Bold';
+  width: 100%;
+  text-align: center;
+}
+#player {
+  background: #ECECEC;
+  border-width: 0px;
+  border-radius: 4px;
+  padding: 8px;
+  text-align: center;
+  margin-right: 8px;
+}
+#checkedPlayer {
+  background: rgb(46, 46, 49);
+  border-width: 0px;
+  border-radius: 4px;
+  padding: 8px;
+  text-align: center;
+  margin-right: 8px;
+}
+#buttonTitle {
+  font-size: 16px;
+  padding-bottom: 2px;
+}
+#checkedButtonTitle {
+  font-size: 16px;
+  padding-bottom: 2px;
+  color: white;
+}
+#buttonSubtitle {
+  font-size: 12px;
+}
+#checkedButtonSubtitle {
+  font-size: 12px;
+  color: white;
+}
+#playersContainer {
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+#pairsContainer {
+  padding-bottom: 12px;
+}
+#battleplan {
+  margin-bottom: 4px;
+  font-size: 16px;
+}

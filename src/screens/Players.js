@@ -1,10 +1,11 @@
 import React, {useState, useEffect, useReducer, useCallback} from 'react'
 import {useNavigate} from 'react-router-dom'
 import useDebounce from '../utilities/useDebounce'
-import {players, search, player, meta} from '../utilities/appState'
+import {players, search, player, meta, teams} from '../utilities/appState'
 import General from '../icons/blackGeneral.svg'
 
 import map from 'lodash/map'
+import find from 'lodash/find'
 import filter from 'lodash/filter'
 import sortBy from 'lodash/sortBy'
 import reverse from 'lodash/reverse'
@@ -30,8 +31,7 @@ const Players = () => {
                 const rosterInfo = JSON.parse(player.roster_stat) || {}
                 return includes(lowerCase(`${player.surname} ${player.name}`), lowerCase(searchValue)) ||
                     includes(lowerCase(rosterInfo?.allegiance), lowerCase(searchValue)) ||
-                    includes(lowerCase(rosterInfo.grandAlliance), lowerCase(searchValue)) ||
-                    includes(lowerCase(player.city), lowerCase(searchValue))
+                    includes(lowerCase(rosterInfo.grandAlliance), lowerCase(searchValue))
             })
             search.players = sortPlayers(_players)
         } else {
@@ -42,7 +42,7 @@ const Players = () => {
     )
 
     useEffect(() => {
-        fetch('https://aoscom.online/players/')
+        fetch('https://aoscom.online/teams/all_teams_players/')
             .then(response => response.json())
             .then(data => {
                 players.data = data
@@ -62,11 +62,11 @@ const Players = () => {
         setSearchValue(e.target.value)
     }
 
-    const renderRow = (place, player, city, army, w, d, tp, last, isOddRow, withRoster) => <div id={Styles.row} style={{'background': `${isOddRow ? '#ECECEC' : ''}`}}>
+    const renderRow = (place, player, team, army, w, d, tp, last, isOddRow, withRoster) => <div id={Styles.row} style={{'background': `${isOddRow ? '#ECECEC' : ''}`}}>
         <p id={Styles.smallColumn}>{place}</p>
         <div id={Styles.playerInfo}>
             <p id={Styles.сolumn}>{player}</p>
-            {city ? <p id={Styles.subtitle}>{city}</p> : null}
+            {team ? <p id={Styles.subtitle}>{team}</p> : null}
         </div>
         {meta.round || meta.isRostersShow
             ? <>
@@ -84,8 +84,9 @@ const Players = () => {
 
     const renderPlayer = (player, index) => {
         const allegiance = JSON.parse(player.roster_stat)?.allegiance
+        const team = find(teams.data, ['id', player.team_id])?.name
         return <button key={index} id={Styles.playerContainer} onClick={handleClickPlayer(player)}>
-            {renderRow(index + 1, `${player.surname} ${player.name}`, player.city, allegiance, player.win, player.draw, player.tp_sum, player.opp_p, index % 2, player.roster)}
+            {renderRow(index + 1, `${player.surname} ${player.name}`, team, allegiance, player.win, player.draw, player.tp_sum, player.opp_p, index % 2, player.roster)}
         </button>
     }
 
