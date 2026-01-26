@@ -118,7 +118,7 @@ const Team = () => {
       }, [])
 
     const handleDropPlayerRequest = useCallback(async (playerId) => {
-        await fetch(`https://aoscom.online/teams/something_team_player/?id=${playerId}&column=team_id&value=${0}`, {
+        await fetch(`https://aoscom.online/teams/something_team_player/?id=${playerId}&column=team_id&value=none`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

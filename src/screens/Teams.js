@@ -82,7 +82,7 @@ const Teams = () => {
     }
 
     const handleSendMessageToCaptain = useCallback(async (captainId) => {
-        const message = `${playerInfo.surname} ${playerInfo.name} вступил в вашу команду`
+        const message = `${playerInfo?.surname} ${playerInfo?.name} вступил в вашу команду`
         await fetch(`https://aoscom.online/messages/send_personal_message/?tg_id=${captainId}&message=${message}`)
             .catch(error => console.error(error))
       }, [playerInfo])
