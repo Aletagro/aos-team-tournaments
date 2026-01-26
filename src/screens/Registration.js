@@ -77,6 +77,7 @@ const Registration = () => {
         })
             .then(response => response.json())
             .then(data => {
+                player.info = data.player_info
                 setPlayerId(get(data, 'player_info.id'))
             })
             .catch(error => console.error(error))
