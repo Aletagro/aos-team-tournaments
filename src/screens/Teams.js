@@ -58,7 +58,7 @@ const Teams = () => {
     const handleClickTeam = (_team) => () => {
         if (player.reg && !playerInfo?.team_id && !player.isJudge) {
             handleOpenModal(_team)
-        } else if (meta.round || meta.isRostersShow || player.isJudge) {
+        } else {
             navigate('/team', {state: {team: _team, title: _team.name}})
         }
     }

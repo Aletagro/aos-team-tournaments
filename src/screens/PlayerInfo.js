@@ -13,6 +13,7 @@ import {players, player as _player, rosterViewType, teams} from '../utilities/ap
 import map from 'lodash/map'
 import get from 'lodash/get'
 import find from 'lodash/find'
+import noop from 'lodash/noop'
 
 import Styles from './styles/PlayerInfo.module.css'
 
@@ -31,7 +32,6 @@ const PlayerInfo = () => {
     const team = find(teams.data, ['id', player.team_id])?.name
     const [modalData, setModalData] = useState({visible: false, title: ''})
     const [isPlayerDrop, setIsPlayerDrop] = useState(false)
-    const [isPlayerActive, setIsPlayerActive] = useState(Boolean(player?.status))
     const [message, setMessage] = useState('')
 
     const handleClickAllegiance = () => {
@@ -55,10 +55,6 @@ const PlayerInfo = () => {
         setModalData({visible: true, title: 'Вы уверен, что хотите удалить игрока с турнира?', Content: renderDropModalConent})
     }
 
-    const handleOpenStatusModal = () => {
-        setModalData({visible: true, title: `Вы уверен, что изменить статус игрока на ${isPlayerActive ? '"Не активен"' : '"Активен"'}`, Content: renderStatusModalConent})
-    }
-
     const handleDropPlayer = useCallback(async () => {
         handleCloseModal()
         await fetch(`https://aoscom.online//teams/delete_team_player/?id=${player?.id}`, {
@@ -74,22 +70,6 @@ const PlayerInfo = () => {
             })
             .catch(error => console.error(error))
       }, [player?.id])
-
-    const handlChangeStatus = useCallback(async () => {
-        handleCloseModal()
-        await fetch(`https://aoscom.online/teams/something_team_player/?id=${player?.id}&column=status&value=${!player.status}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': "application/json, text/javascript, /; q=0.01"
-            }
-        })
-            .then(() => {
-                setIsPlayerActive(!isPlayerActive)
-                forceUpdate()
-            })
-            .catch(error => console.error(error))
-      }, [player, isPlayerActive])
 
     const handleSendMessage = useCallback(async (_message, customMessage) => {
         await fetch(`https://aoscom.online/messages/send_personal_message/?tg_id=${player?.tgId}&message=${customMessage ? _message : message}`)
@@ -108,11 +88,6 @@ const PlayerInfo = () => {
     const renderDropModalConent = () => <div id={Styles.modal}>
         <button id={Styles.modalButton} onClick={handleCloseModal}>Нет</button>
         <button id={Styles.modalButton} onClick={handleDropPlayer}>Да, удалить</button>
-    </div>
-
-    const renderStatusModalConent = () => <div id={Styles.modal}>
-        <button id={Styles.modalButton} onClick={handleCloseModal}>Нет</button>
-        <button id={Styles.modalButton} onClick={handlChangeStatus}>Да, изменить</button>
     </div>
 
     const renderSendMessage = () => <div id={Styles.sendMessageContainer}>
@@ -146,10 +121,6 @@ const PlayerInfo = () => {
     
     return <div id='column' className='Chapter'>
         {isPlayerDrop ? <p id={Styles.isPlayerDrop}>Игрок удалён с турнира</p> : null}
-        {_player.isJudge
-            ? <p id={Styles.title}>Статус игрока: <b>{isPlayerActive ? 'Активен' : 'Не активен'}</b></p>
-            : null
-        }
         <p id={Styles.title}><b>Команда:</b> {team}</p>
         <p id={Styles.title}><b>Гранд Альянс:</b> {rosterInfo?.grandAlliance}</p>
         <p id={Styles.title}><b>Армия:</b> {rosterInfo?.allegiance}</p>
@@ -168,7 +139,7 @@ const PlayerInfo = () => {
                 <b id={Styles.title}>Ростер</b>
                 <div id={Styles.checkboxContainer} onClick={handleChangeViewType}>
                     <p id={Styles.checkboxText}>Easy View</p>
-                    <Checkbox onClick={handleChangeViewType} checked={rosterViewType.easy} />
+                    <Checkbox onClick={noop} checked={rosterViewType.easy} />
                 </div>
                 {rosterViewType.easy
                     ? <RosterEasy roster={roster} info={rosterInfo} />
@@ -180,7 +151,6 @@ const PlayerInfo = () => {
         }
         {_player.isJudge
             ? <> 
-                <button id={Styles.rulesButton} onClick={handleOpenStatusModal}>Изменить статус игрока на {isPlayerActive ? '"Не активен"' : '"Активен"'}</button>
                 <button id={Styles.rulesButton} onClick={handleOpenDropModal}>Удалить игрока с турнира</button>
                 {renderSendMessage()}
             </>

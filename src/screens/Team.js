@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import Constants from '../Constants'
 import Modal from '../components/Modal'
 import FloatingLabelInput from '../components/FloatingLabelInput'
-import {players as _players, player as _player} from '../utilities/appState'
+import {players as _players, player as _player, meta} from '../utilities/appState'
 import Close from '../icons/close.svg'
 
 import map from 'lodash/map'
@@ -44,7 +44,10 @@ const Team = () => {
     }
 
     const handleClickPlayer = (player) => () => {
-        navigate('/playerInfo', {state: {player, title: `${player.surname} ${player.name}`}})
+        const isYourTeam = _player?.info?.team_id === team.id
+        if (isYourTeam || meta.round || meta.isRostersShow || _player.isJudge) {
+            navigate('/playerInfo', {state: {player, title: `${player.surname} ${player.name}`}})
+        }
     }
 
     const handleCloseModal = () => {
