@@ -32,3 +32,15 @@
     background: darkred;
     padding: 0px 8px;
 }
+#playerInfo {
+    flex: 1;
+    padding-left: 4px;
+    align-items: center;
+    text-align: start;
+    padding-right: 4px;
+}
+#subtitle {
+    padding-top: 2px;
+    color: darkgray;
+    font-size: 12px;
+}
