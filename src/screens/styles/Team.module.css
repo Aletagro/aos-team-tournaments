@@ -76,3 +76,7 @@
 #closeIcon {
     margin-right: 8px;
 }
+#error {
+    color: red;
+    padding-bottom: 12px;
+}

@@ -12,8 +12,11 @@ import map from 'lodash/map'
 import get from 'lodash/get'
 import find from 'lodash/find'
 import size from 'lodash/size'
+import pickBy from 'lodash/pickBy'
 import filter from 'lodash/filter'
 import isArray from 'lodash/isArray'
+import forEach from 'lodash/forEach'
+import countBy from 'lodash/countBy'
 
 import Styles from './styles/Team.module.css'
 
@@ -27,6 +30,32 @@ const Team = () => {
     const [isTeamActive, setIsTeamActive] = useState(Boolean(team?.status))
     const [message, setMessage] = useState('')
     const [players, setPlayers] = useState([])
+
+    const rosters = map(players, p => {
+        const roster = JSON.parse(p.roster)
+        return roster
+    })
+    const tactics = map(rosters, 'tactics')
+    let counts = {}
+    const errors = []
+    forEach(tactics, subArray => {
+        forEach(subArray, item => {
+            counts[item] = (counts[item] || 0) + 1
+        })
+    })
+    forEach(counts, (count, key) => {
+        if (count > 3) {
+            errors.push(`Тактика ${key} используется ${count} раз`)
+        }
+    })
+    const manifestationLores = map(rosters, 'manifestationLore')
+    counts = countBy(manifestationLores)
+    const duplicates = pickBy(counts, count => count > 1)
+    forEach(counts, (count, key) => {
+        if (count > 1) {
+            errors.push(`Manifestation Lore ${key} используется ${count} раз`)
+        }
+    })
 
     useEffect(() => {
         fetch(`https://aoscom.online/teams/all_players_from_team/?team_id=${team?.id}`)
@@ -202,11 +231,20 @@ const Team = () => {
     const renderPlayer = (player, index) => <button key={index} id={Styles.playContainer} onClick={handleClickPlayer(player)}>
         {renderPlayerRow(index + 1, `${player.surname} ${player.name}`, player.army, index % 2, player.id)}
     </button>
-    
+
+    const renderError = (error, index) => <p id={Styles.error} key={index}>{error}</p>
+
     return <div id='column' className='Chapter'>
         {isTeamDrop ? <p id={Styles.isTeamDrop}>Команда удалёна с турнира</p> : null}
         {_player.isJudge
             ? <p id={Styles.title}>Статус команды: <b>{isTeamActive ? 'Активна' : 'Не активна'}</b></p>
+            : null
+        }
+        {size(errors)
+            ? <>
+                <b>Ошибки с композиции листов  команды</b>
+                {map(errors, renderError)}
+            </>
             : null
         }
         {size(players)

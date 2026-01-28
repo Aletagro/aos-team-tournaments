@@ -32,8 +32,7 @@ const Admin = () => {
     // }, [playerId, key, value])
 
     const handleCreateParings = useCallback(async () => {
-        // TODO
-        await fetch(`https://aoscom.online/parings/?next_round=${meta.round + 1}`)
+        await fetch(`https://aoscom.online/teams/get_teams_parings/?next_round=${meta.round + 1}`)
             .then(response => response.json())
             .then(data => {
                 setPairings(data)
@@ -94,8 +93,7 @@ const Admin = () => {
     }, [handleGetMeta])
 
     const handleSetOppPower = useCallback(async () => {
-        // TODO
-        fetch('https://aoscom.online/rounds/opp_power/', {
+        fetch('https://aoscom.online/teams/opp_power/', {
             method: 'PUT'
         })
             .catch(error => console.error(error))
@@ -125,8 +123,7 @@ const Admin = () => {
 
 
     const handleStartRound = useCallback(async () => {
-        // TODO
-        await fetch(`https://aoscom.online/parings/update_parings/?next_round=${meta.round + 1}`, {
+        await fetch(`https://aoscom.online/teams/update_all_teams_parings/?next_round=${meta.round + 1}`, {
             method: 'PUT',
             body: JSON.stringify(pairings),
             headers: {

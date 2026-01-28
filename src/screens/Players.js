@@ -29,9 +29,11 @@ const Players = () => {
         if (searchValue) {
             const _players = filter(players.data, (player) => {
                 const rosterInfo = JSON.parse(player.roster_stat) || {}
+                const playerTeam = find(teams.data, ['id', player.team_id])?.name
                 return includes(lowerCase(`${player.surname} ${player.name}`), lowerCase(searchValue)) ||
                     includes(lowerCase(rosterInfo?.allegiance), lowerCase(searchValue)) ||
-                    includes(lowerCase(rosterInfo.grandAlliance), lowerCase(searchValue))
+                    includes(lowerCase(rosterInfo.grandAlliance), lowerCase(searchValue)) ||
+                    includes(lowerCase(playerTeam), lowerCase(searchValue))
             })
             search.players = sortPlayers(_players)
         } else {

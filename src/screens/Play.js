@@ -92,8 +92,7 @@ const Play = () => {
     }
 
     const handleSendResult = useCallback(async () => {
-        // TODO
-        await fetch(`https://aoscom.online/rounds/play/?cur_round=${info?.round}&cur_table=${info?.table}&vp_first=${firstPlayer}&vp_second=${secondPlayer}&minor_win=${minorWin || 0}`, {
+        await fetch(`https://aoscom.online/teams/update_teams_game_result/?cur_round=${info?.round}&id_first=${info.firstPlayer.id}&id_second=${info.secondPlayer.id}&vp_first=${firstPlayer}&vp_second=${secondPlayer}&minor_win=${minorWin || 0}`, {
             method: 'PUT'
         })
             .then(response => response.json())
@@ -101,7 +100,7 @@ const Play = () => {
                 setIsFinished(true)
             })
             .catch(error => console.error(error))
-    }, [firstPlayer, secondPlayer, info?.round, info?.table, minorWin])
+    }, [firstPlayer, secondPlayer, info, minorWin])
 
     const handleJudgeCall = () => {
         fetch(`https://aoscom.online/messages/judges_call?tg_id=${user?.id}`)

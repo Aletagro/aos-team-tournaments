@@ -44,8 +44,7 @@ const RoundPlay = ({play, table, round, onOpenModal, onCloseModal}) => {
 
     const handleChangeResult = useCallback(async () => {
         setIsChangeResultBlockShow(false)
-        // TODO
-        await fetch(`https://aoscom.online/rounds/play/?cur_round=${round}&cur_table=${table}&vp_first=${firstValue}&vp_second=${secondValue}&minor_win=${minorWin || 0}`, {
+        await fetch(`https://aoscom.online/teams/update_teams_game_result/?cur_round=${round}&id_first=${playerOne.id}&id_second=${playerTwo.id}&vp_first=${firstValue}&vp_second=${secondValue}&minor_win=${minorWin || 0}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -53,7 +52,7 @@ const RoundPlay = ({play, table, round, onOpenModal, onCloseModal}) => {
             }
         })
             .catch(error => console.error(error))
-    }, [round, table, firstValue, secondValue, minorWin])
+    }, [round, firstValue, secondValue, minorWin, playerOne, playerTwo])
 
     const handleClickCheckbox = (value) => () => {
         setMinorWin(value)
