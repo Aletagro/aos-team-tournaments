@@ -226,9 +226,12 @@ const Team = () => {
         }
     </div>
 
-    const renderPlayer = (player, index) => <button key={index} id={Styles.playContainer} onClick={handleClickPlayer(player)}>
-        {renderPlayerRow(index + 1, `${player.surname} ${player.name}`, player.army, index % 2, player.id)}
-    </button>
+    const renderPlayer = (player, index) => {
+        const allegiance = JSON.parse(player.roster_stat)?.allegiance
+        return <button key={index} id={Styles.playContainer} onClick={handleClickPlayer(player)}>
+            {renderPlayerRow(index + 1, `${player.surname} ${player.name}`, allegiance, index % 2, player.id)}
+        </button>
+    }
 
     const renderError = (error, index) => <p id={Styles.error} key={index}>{error}</p>
 
