@@ -5,7 +5,7 @@ import Constants from '../Constants'
 import {setTournamentStatus} from '../utilities/utils'
 import Checkbox from '../components/Checkbox'
 import FloatingLabelInput from '../components/FloatingLabelInput'
-import {players, meta} from '../utilities/appState'
+import {meta, teams} from '../utilities/appState'
 
 import map from 'lodash/map'
 import find from 'lodash/find'
@@ -243,14 +243,11 @@ const Admin = () => {
     }
 
     const renderPlayer = (player, table, isFirst) => {
-        const playerArmy = JSON.parse(player?.roster_stat)?.allegiance
         const isChecked = find(playersForChange, p => p[1] === player?.id)
         return <div id={Styles.player}>
-            <b>{isFirst ? 'Первый' : 'Второй'} игрок</b>
+            <b>{isFirst ? 'Первая' : 'Вторая'} команда</b>
             <p>Имя: {player?.surname} {player?.name}</p>
             <p>id: {player?.id}</p>
-            <p>Город: {player?.city}</p>
-            <p>Армия: {playerArmy}</p>
             <Checkbox
                 onClick={handleCheckPlayer(player?.id, Number(table))}
                 checked={isChecked}
@@ -260,11 +257,11 @@ const Admin = () => {
     }
 
     const renderPairing = (pairing, index) => {
-        const firstPlayer = find(players.data, ['id', pairing[0]])
+        const firstPlayer = find(teams.data, ['id', pairing[0]])
         if (!firstPlayer) {
             return null
         }
-        const secondPlayer = find(players.data, ['id', pairing[1]])
+        const secondPlayer = find(teams.data, ['id', pairing[1]])
         return <div id={Styles.play} key={index}>
             <h3 id={Styles.text}>Стол {index}</h3>
             {renderPlayer(firstPlayer, index, true)}
@@ -302,7 +299,7 @@ const Admin = () => {
                     {map(pairings, renderPairing)}
                 </div>
                 <button id={isChangeButtonDisabled ? Styles.disableButton : Styles.button} onClick={handleChangePlayers} disabled={isChangeButtonDisabled}>
-                    Запарить выбранных игроков друг на друга
+                    Запарить выбранные команды друг на друга
                 </button>
                 <button id={Styles.button} onClick={handleStartRound}>Начать новый раунд</button>
             </>

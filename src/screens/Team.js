@@ -12,7 +12,6 @@ import map from 'lodash/map'
 import get from 'lodash/get'
 import find from 'lodash/find'
 import size from 'lodash/size'
-import pickBy from 'lodash/pickBy'
 import filter from 'lodash/filter'
 import isArray from 'lodash/isArray'
 import forEach from 'lodash/forEach'
@@ -50,9 +49,8 @@ const Team = () => {
     })
     const manifestationLores = map(rosters, 'manifestationLore')
     counts = countBy(manifestationLores)
-    const duplicates = pickBy(counts, count => count > 1)
     forEach(counts, (count, key) => {
-        if (count > 1) {
+        if (count > 1 && key) {
             errors.push(`Manifestation Lore ${key} используется ${count} раз`)
         }
     })
