@@ -46,7 +46,7 @@ const Play = () => {
     const disableButton = !firstPlayer || !secondPlayer || (firstPlayer === secondPlayer ? isNull(minorWin) : false)
 
     useEffect(() => {
-        fetch(`https://aoscom.online/teams/one_teams_game/?id=${player?.info?.id}&cur_round=${meta.round}`)
+        fetch(`https://aoscom.online/teams/one_game/?tg_id=${player?.info?.tgId}&cur_round=${meta.round}`)
             .then(response => response.json())
             .then(data => {
                 const firstPlayer = find(players.data, ['id',  min([Number(data.first_player_id), Number(data.second_player_id)])])
@@ -127,7 +127,14 @@ const Play = () => {
     }
 
     return <div id='column' className='Chapter'>
-        <b id={Styles.table} >Стол {info?.table}</b>
+        {info?.results_submitted
+            ? <>
+                <b id={Styles.resultTitle}>Результат вашей игры сдан</b>
+                <p id={Styles.resultText}>{info?.firstPlayer?.surname} {info.first_player_vp} - {info.second_player_vp} {info.secondPlayer?.surname}</p>
+                <p id={Styles.resultText}>Если нужно пересдать результат, то просто внесите новые данные</p>
+            </>
+            : null
+        }
         <div id={Styles.inputContainer}>
             <div id={Styles.playerContainer}>
                 <FloatingLabelInput
@@ -178,7 +185,7 @@ const Play = () => {
             </div>
             : null
         }
-        {map(battleplans, renderBattleplan)}
+        <p id={Styles.noticed}>Будьте внимательны, вводятся ваши VP, набранные за игру, а не TO </p>
         <button
             id={disableButton ? Styles.disableButton : Styles.button}
             onClick={handleSendResult}
@@ -186,8 +193,8 @@ const Play = () => {
         >
             Отправить Результаты
         </button>
-        <p id={Styles.noticed}>Будьте внимательны, вводятся ваши VP, набранные за игру, а не TO </p>
         <button id={Styles.button} onClick={handleJudgeCall}>Вызвать Судью</button>
+        {map(battleplans, renderBattleplan)}
     </div>
 }
 

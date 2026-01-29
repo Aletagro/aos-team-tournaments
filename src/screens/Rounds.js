@@ -20,7 +20,7 @@ const Rounds = () => {
 
     useEffect(() => {
         if (!rounds[rounds.selected]) {
-            fetch(`https://aoscom.online/teams/teams_round/?cur_round=${rounds.selected}`)
+            fetch(`https://aoscom.online/teams/get_teams_players_round/?cur_round=${rounds.selected}`)
                 .then(response => response.json())
                 .then(data => {
                     rounds[rounds.selected] = data
@@ -53,8 +53,8 @@ const Rounds = () => {
     }
 
     const renderPlay = (play, index) => <RoundPlay
+        key={index}
         play={play}
-        table={index}
         round={rounds.selected}
     />
 
@@ -70,10 +70,12 @@ const Rounds = () => {
         </div>
         <div>
             <div id={Styles.row} style={{'background': '#ECECEC'}}>
-                <p id={Styles.smallColumn}>Стол</p>
-                <p id={Styles.сolumn}>Игрок 1</p>
-                <p id={Styles.smallColumn}>Результат</p>
-                <p id={Styles.сolumn}>Игрок 2</p>
+                <p id={Styles.smallColumn}>Линия</p>
+                <div id={Styles.сolumn}>
+                    <p id={Styles.сolumn}>Команда 1</p>
+                    <p id={Styles.smallColumn}>Результат</p>
+                    <p id={Styles.сolumn}>Команда 2</p>
+                </div>
             </div>
             {map(rounds[rounds.selected], renderPlay)}
         </div>

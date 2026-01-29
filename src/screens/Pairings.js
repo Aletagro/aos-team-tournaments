@@ -18,7 +18,7 @@ const battleplansForRounds = [
 const getPlayer = (p, i) => {
     const allegiance = JSON.parse(p.roster_stat)?.allegiance
     return {
-        id: p.tgId,
+        id: p.id,
         name: `${p.surname} ${p.name}`,
         allegiance,
         opp: get(p, `game_${meta.round}_opp`),
@@ -31,11 +31,11 @@ const Pairings = () => {
     const [_, forceUpdate] = useReducer((x) => x + 1, 0)
     const [checkedPlayer, setCheckedPlayer] = useState(undefined)
     const [checkedOpp, setCheckedOpp] = useState(undefined)
-    const team = find(teams.data, ['id', player.info?.teamId])
+    const team = find(teams.data, ['id', player.info?.team_id])
     const oppTeamId = get(team, `game_${meta.round}_opp`)
     const oppTeam = find(teams.data, ['id', oppTeamId])
-    const players = filter(_players.data, ['teamId', team?.id])
-    const opponents = filter(_players.data, ['teamId', oppTeamId])
+    const players = filter(_players.data, ['team_id', team?.id])
+    const opponents = filter(_players.data, ['team_id', oppTeamId])
     // eslint-disable-next-line
     const [shortPlayers, setShortPlayers] = useState(map(players, getPlayer))
     // eslint-disable-next-line

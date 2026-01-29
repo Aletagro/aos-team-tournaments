@@ -17,28 +17,3 @@
   justify-content: center;
   align-items: center;
 }
-#changeContainer {
-  padding: 12px;
-}
-#changeButton {
-  background: #2E2D32;
-  color: white;
-  border-width: 0px;
-  border-radius: 4px;
-  padding: 12px;
-  width: 100%;
-}
-#checkboxRow {
-  display: flex;
-  padding-bottom: 12px;
-  align-items: center;
-}
-#checkboxText {
-  font-size: 16px;
-  margin-left: 4px;
-  padding-top: 4px;
-}
-#checkboxTitle {
-  font-size: 20px;
-  padding-bottom: 4px;
-}

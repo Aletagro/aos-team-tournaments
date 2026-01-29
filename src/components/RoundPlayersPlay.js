@@ -1,0 +1,130 @@
+import React, {useState, useCallback} from 'react'
+import {useNavigate} from 'react-router-dom'
+import FloatingLabelInput from './FloatingLabelInput'
+import Checkbox from './Checkbox'
+import {rounds, player, players} from '../utilities/appState'
+
+import get from 'lodash/get'
+import find from 'lodash/find'
+
+import Styles from './styles/RoundPlayersPlay.module.css'
+
+const inputStyle = {
+    '--Input-minHeight': '48px',
+    'width': '100%',
+    'borderRadius': '4px',
+    'marginBottom': '16px',
+    'borderColor': '#B4B4B4',
+    'boxShadow': 'none',
+    'fontFamily': 'Minion Pro Regular'
+}
+
+const RoundPlayersPlay = ({pair, round, onOpenModal, onCloseModal}) => {
+    const [isChangeResultBlockShow, setIsChangeResultBlockShow] = useState(false)
+    const navigate = useNavigate()
+    const playerOne = find(players.data, ['id', pair[0]])
+    const playerTwo = find(players.data, ['id', pair[1]])
+    const firstPlayerScore = get(playerOne, `game_${rounds.selected}_tp`) || 0
+    const secondPlayerScore = get(playerTwo, `game_${rounds.selected}_tp`) || 0
+    const [firstValue, setFirstValue] = useState(0)
+    const [secondValue, setSecondValue] = useState(0)
+    const [minorWin, setMinorWin] = useState(null)
+
+    const handleClickPlayer = (_player) => () => {
+        navigate('/playerInfo', {state: {player: _player, title: `${_player?.surname} ${_player?.name}`}})
+    }
+
+    const handleChangeFirstValue = (e) => {
+        setFirstValue(e.target.value)
+    }
+
+    const handleChangeSecondValue = (e) => {
+        setSecondValue(e.target.value)
+    }
+
+    const handleChangeResult = useCallback(async () => {
+        setIsChangeResultBlockShow(false)
+        await fetch(`https://aoscom.online/teams/update_teams_game_result/?cur_round=${round}&id_first=${playerOne.id}&id_second=${playerTwo.id}&vp_first=${firstValue}&vp_second=${secondValue}&minor_win=${minorWin || 0}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': "application/json, text/javascript, /; q=0.01"
+            }
+        })
+            .catch(error => console.error(error))
+    }, [round, firstValue, secondValue, minorWin, playerOne, playerTwo])
+
+    const handleClickCheckbox = (value) => () => {
+        setMinorWin(value)
+    }
+
+    const renderChangeResultBlock = () => {
+        return <div id={Styles.changeContainer}>
+            <FloatingLabelInput
+                style={inputStyle}
+                onChange={handleChangeFirstValue}
+                label={`${playerOne?.name} ${playerOne?.surname}`}
+                value={firstValue}
+            />
+            <FloatingLabelInput
+                style={inputStyle}
+                onChange={handleChangeSecondValue}
+                label={`${playerTwo?.name} ${playerTwo?.surname}`}
+                value={secondValue}
+            />
+            {firstValue && firstValue === secondValue
+                ? <div>
+                    <p id={Styles.checkboxTitle}>Кто выполнил больше тактик</p>
+                    <div>
+                        <div id={Styles.checkboxRow} onClick={handleClickCheckbox(1)}>
+                            <Checkbox onClick={handleClickCheckbox(1)} checked={minorWin === 1} />
+                            <p id={Styles.checkboxText}>{playerOne?.name} {playerTwo?.surname}</p>
+                        </div>
+                        <div id={Styles.checkboxRow} onClick={handleClickCheckbox(0)}>
+                            <Checkbox onClick={handleClickCheckbox(0)} checked={minorWin === 0} />
+                            <p id={Styles.checkboxText}>Равное количество</p>
+                        </div>
+                        <div id={Styles.checkboxRow} onClick={handleClickCheckbox(2)}>
+                            <Checkbox onClick={handleClickCheckbox(2)} checked={minorWin === 2} />
+                            <p id={Styles.checkboxText}>{playerTwo?.name} {playerTwo?.surname}</p>
+                        </div>
+                    </div>
+                </div>
+                : null
+            }
+            <button id={Styles.changeButton} onClick={handleChangeResult}>Изменить результаты</button>
+        </div>
+    }
+
+    const handelShowChangeResultBlock = () => {
+        if (player.isJudge) {
+            setIsChangeResultBlockShow(!isChangeResultBlockShow)
+        }
+    }
+    
+    if (!playerOne || !playerTwo) {
+        return null
+    }
+
+    return <>
+        <div id={Styles.row}>
+            <div id={Styles.smallColumn} />
+            <button id={Styles.сolumn} onClick={handleClickPlayer(playerOne)}>
+                <p>{playerOne?.name} {playerOne?.surname}</p>
+            </button>
+            <p id={Styles.smallColumn} onClick={handelShowChangeResultBlock}>
+                {firstPlayerScore} - {secondPlayerScore}
+            </p>
+            <button id={Styles.сolumn} onClick={handleClickPlayer(playerTwo)}>
+                <p>{playerTwo?.name}  {playerTwo?.surname}</p>
+            </button>
+        </div>
+        {isChangeResultBlockShow
+            ? renderChangeResultBlock()
+            : null
+        }
+    </>
+}
+
+
+export default RoundPlayersPlay

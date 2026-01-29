@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useReducer, useCallback} from 'react'
+import React, {useState, useEffect, useReducer} from 'react'
 import {useNavigate} from 'react-router-dom'
 import useDebounce from '../utilities/useDebounce'
 import {players, search, player, meta, teams} from '../utilities/appState'
@@ -7,8 +7,6 @@ import General from '../icons/blackGeneral.svg'
 import map from 'lodash/map'
 import find from 'lodash/find'
 import filter from 'lodash/filter'
-import sortBy from 'lodash/sortBy'
-import reverse from 'lodash/reverse'
 import includes from 'lodash/includes'
 import lowerCase from 'lodash/lowerCase'
 
@@ -20,14 +18,9 @@ const Players = () => {
     // eslint-disable-next-line
     const [_, forceUpdate] = useReducer((x) => x + 1, 0)
 
-    const sortPlayers = useCallback((array) => meta.round || meta.isRostersShow
-        ? reverse(sortBy(array, ['win', 'draw', 'tp_sum', 'opp_p']))
-        : array
-    , [])
-
     useDebounce(() => {
         if (searchValue) {
-            const _players = filter(players.data, (player) => {
+            const _players = filter(players.standing, (player) => {
                 const rosterInfo = JSON.parse(player.roster_stat) || {}
                 const playerTeam = find(teams.data, ['id', player.team_id])?.name
                 return includes(lowerCase(`${player.surname} ${player.name}`), lowerCase(searchValue)) ||
@@ -35,9 +28,9 @@ const Players = () => {
                     includes(lowerCase(rosterInfo.grandAlliance), lowerCase(searchValue)) ||
                     includes(lowerCase(playerTeam), lowerCase(searchValue))
             })
-            search.players = sortPlayers(_players)
+            search.players = _players
         } else {
-            search.players = sortPlayers(players.data)
+            search.players = players.standing
         }
         forceUpdate()
       }, [searchValue], 300
@@ -47,7 +40,7 @@ const Players = () => {
         fetch('https://aoscom.online/teams/all_teams_players/')
             .then(response => response.json())
             .then(data => {
-                players.data = data
+                players.standing = map(data, (_player, index) => ({..._player, place: index + 1}))
                 forceUpdate()
             })
             .catch(error => console.error(error))
@@ -88,7 +81,7 @@ const Players = () => {
         const allegiance = JSON.parse(player.roster_stat)?.allegiance
         const team = find(teams.data, ['id', player.team_id])?.name
         return <button key={index} id={Styles.playerContainer} onClick={handleClickPlayer(player)}>
-            {renderRow(index + 1, `${player.surname} ${player.name}`, team, allegiance, player.win, player.draw, player.tp_sum, player.opp_p, index % 2, player.roster)}
+            {renderRow(player.place, `${player.surname} ${player.name}`, team, allegiance, player.win, player.draw, player.tp_sum, player.opp_p, index % 2, player.roster)}
         </button>
     }
 
