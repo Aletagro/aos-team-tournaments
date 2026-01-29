@@ -2,7 +2,7 @@ import React, {useState, useCallback} from 'react'
 import {useNavigate} from 'react-router-dom'
 import FloatingLabelInput from './FloatingLabelInput'
 import Checkbox from './Checkbox'
-import {rounds, player, players} from '../utilities/appState'
+import {rounds, player, teams} from '../utilities/appState'
 
 import get from 'lodash/get'
 import find from 'lodash/find'
@@ -22,16 +22,16 @@ const inputStyle = {
 const RoundPlay = ({play, table, round, onOpenModal, onCloseModal}) => {
     const [isChangeResultBlockShow, setIsChangeResultBlockShow] = useState(false)
     const navigate = useNavigate()
-    const playerOne = find(players.data, ['id', play[0]])
-    const playerTwo = find(players.data, ['id', play[1]])
+    const playerOne = find(teams.data, ['id', play[0]])
+    const playerTwo = find(teams.data, ['id', play[1]])
     const firstPlayerScore = get(playerOne, `game_${rounds.selected}_tp`) || 0
     const secondPlayerScore = get(playerTwo, `game_${rounds.selected}_tp`) || 0
     const [firstValue, setFirstValue] = useState(0)
     const [secondValue, setSecondValue] = useState(0)
     const [minorWin, setMinorWin] = useState(null)
 
-    const handleClickPlayer = (_player) => () => {
-        navigate('/playerInfo', {state: {player: _player, title: `${_player?.surname} ${_player?.name}`}})
+    const handleClickPlayer = (_team) => () => {
+        navigate('/team', {state: {team: _team, title: _team?.name}})
     }
 
     const handleChangeFirstValue = (e) => {
@@ -63,13 +63,13 @@ const RoundPlay = ({play, table, round, onOpenModal, onCloseModal}) => {
             <FloatingLabelInput
                 style={inputStyle}
                 onChange={handleChangeFirstValue}
-                label={playerOne.surname}
+                label={playerOne.name}
                 value={firstValue}
             />
             <FloatingLabelInput
                 style={inputStyle}
                 onChange={handleChangeSecondValue}
-                label={playerTwo.surname}
+                label={playerTwo.name}
                 value={secondValue}
             />
             {firstValue && firstValue === secondValue
@@ -78,7 +78,7 @@ const RoundPlay = ({play, table, round, onOpenModal, onCloseModal}) => {
                     <div>
                         <div id={Styles.checkboxRow} onClick={handleClickCheckbox(1)}>
                             <Checkbox onClick={handleClickCheckbox(1)} checked={minorWin === 1} />
-                            <p id={Styles.checkboxText}>{playerOne?.surname}</p>
+                            <p id={Styles.checkboxText}>{playerOne?.name}</p>
                         </div>
                         <div id={Styles.checkboxRow} onClick={handleClickCheckbox(0)}>
                             <Checkbox onClick={handleClickCheckbox(0)} checked={minorWin === 0} />
@@ -86,7 +86,7 @@ const RoundPlay = ({play, table, round, onOpenModal, onCloseModal}) => {
                         </div>
                         <div id={Styles.checkboxRow} onClick={handleClickCheckbox(2)}>
                             <Checkbox onClick={handleClickCheckbox(2)} checked={minorWin === 2} />
-                            <p id={Styles.checkboxText}>{playerTwo?.surname}</p>
+                            <p id={Styles.checkboxText}>{playerTwo?.name}</p>
                         </div>
                     </div>
                 </div>
@@ -106,13 +106,13 @@ const RoundPlay = ({play, table, round, onOpenModal, onCloseModal}) => {
         <div key={table} id={Styles.row}>
             <p id={Styles.smallColumn}>{table}</p>
             <button id={Styles.сolumn} onClick={handleClickPlayer(playerOne)}>
-                <p>{`${playerOne.surname} ${playerOne.name}`}</p>
+                <p>{playerOne.name}</p>
             </button>
             <p id={Styles.smallColumn} onClick={handelShowChangeResultBlock}>
                 {firstPlayerScore} - {secondPlayerScore}
             </p>
             <button id={Styles.сolumn} onClick={handleClickPlayer(playerTwo)}>
-                <p>{`${playerTwo.surname} ${playerTwo.name}`}</p>
+                <p>{playerTwo.name}</p>
             </button>
         </div>
         {isChangeResultBlockShow

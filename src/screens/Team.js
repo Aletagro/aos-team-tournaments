@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import Constants from '../Constants'
 import Modal from '../components/Modal'
 import FloatingLabelInput from '../components/FloatingLabelInput'
-import {players as _players, player as _player, meta} from '../utilities/appState'
+import {players as _players, player as _player, meta, teams} from '../utilities/appState'
 import Close from '../icons/close.svg'
 
 import map from 'lodash/map'
@@ -206,7 +206,7 @@ const Team = () => {
 
     const renderPlay = (playIndex, index) => {
         const oppId = get(team, `game_${playIndex}_opp`)
-        const opponent = find(_players.data, ['id', oppId])
+        const opponent = find(teams.data, ['id', oppId])
         const tp = get(team, `game_${playIndex}_tp`)
         const gameResult = tp > 61 ? 'Win' : tp === 60 ? 'Draw' : tp === null ? '' : 'Lose'
         return opponent
