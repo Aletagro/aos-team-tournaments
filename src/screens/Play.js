@@ -130,7 +130,7 @@ const Play = () => {
         {info?.results_submitted
             ? <>
                 <b id={Styles.resultTitle}>Результат вашей игры сдан</b>
-                <p id={Styles.resultText}>{info?.firstPlayer?.surname} {info.first_player_vp} - {info.second_player_vp} {info.secondPlayer?.surname}</p>
+                <p id={Styles.resultText}>{info?.firstPlayer?.surname} {info.first_player_vp} ({info.first_player_tp}) - ({info.second_player_tp}) {info.second_player_vp} {info.secondPlayer?.surname}</p>
                 <p id={Styles.resultText}>Если нужно пересдать результат, то просто внесите новые данные</p>
             </>
             : null
